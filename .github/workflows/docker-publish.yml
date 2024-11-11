@@ -1,7 +1,11 @@
 name: Ionia CMS Docker 
 
 on:
-  [workflow_dispatch]
+  workflow_dispatch:
+    inputs:
+      tags:
+        description: "The tags release. For example 8.1"
+        required: true
 
 env:
   REGISTRY: ghcr.io
@@ -43,13 +47,13 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
-            type=raw,value=php-8.1
+            type=raw,value=php-${{ inputs.tags }}
 
       - name: Build and push Docker image
         id: build-and-push
         uses: docker/build-push-action@v5
         with:
-          context: 8.1/.
+          context: ${{ inputs.tags }}/.
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
